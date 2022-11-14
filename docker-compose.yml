@@ -1,0 +1,46 @@
+version: '3'
+volumes:
+    v1:
+
+services:
+    haproxy_img:
+        build: ./haproxy
+        ports:
+            - "80:80"
+        depends_on:
+            - php-apache
+            - php-apache2
+
+    php-apache:
+        build: ./php/
+        hostname: apache1
+        depends_on:
+            - db
+        expose:
+            - "80"
+        volumes:
+            - v1
+
+    php-apache2:
+        build: ./php/
+        hostname: apache2
+        depends_on:
+            - db
+        expose:
+            - "80"
+        volumes:
+            - v1
+
+    db:
+        container_name: db
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: bolson
+            MYSQL_DATABASE: ejemplo
+            MYSQL_USER: frodo
+            MYSQL_PASSWORD: bolson
+        ports:
+            - "3306:3306"
+        volumes:
+            - v1
